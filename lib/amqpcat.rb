@@ -16,6 +16,7 @@ class Amqpcat
       :ssl_key => nil,
       :ssl_cert => nil,
       :verify_ssl => true,
+      :user_type => '',
     }.merge(options)
 
     @amqp_settings.merge!(@opts)
@@ -24,7 +25,7 @@ class Amqpcat
   end
 
   def publish(msg)
-    exchange.publish(msg, :persistent => @opts[:persistent], :key => @opts[:routing_key])
+    exchange.publish(msg, :persistent => @opts[:persistent], :key => @opts[:routing_key], :type => @opts[:user_type], :content_type => @opts[:content_type])
   end
 
   def message_count
@@ -52,8 +53,8 @@ class Amqpcat
       :host => url.host,
       :port => url.port || (use_ssl ? 5671 : 5672),
       :user => url.user || 'guest',
-      :pass => url.password || 'guest',
-      :vhost => url.path == "" ? '/' : url.path,
+      :pass => URI.unescape(url.password) || 'guest',
+      :vhost => url.path == "" ? '/' : url.path[1..-1],
       :ssl => use_ssl,
     }
   end
@@ -65,7 +66,7 @@ class Amqpcat
       :durable => @opts[:durable],
       :auto_delete => @opts[:auto_delete]
     }
-    @exchange = @amqp.exchange(@opts[:name], options)
+    @exchange = @amqp.exchange('amq.topic', options)
   end
 
   def queue

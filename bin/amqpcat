@@ -79,6 +79,14 @@ EOS
     options[:routing_key] = k
   end
 
+  opts.on('--user-type TYPE', "Set user type.") do |k|
+    options[:user_type] = k
+  end
+
+  opts.on('--content-type TYPE', "Set content type.") do |k|
+    options[:content_type] = k
+  end
+
 end
 optparse.parse!
 
@@ -100,7 +108,7 @@ trap 'SIGINT', proc { amqpcat.finish; exit 0 }
 case options[:mode]
   when :consumer
     amqpcat.subscribe do |msg|
-      $stdout.write options[:prefix] + msg[:payload]
+      $stdout.write options[:prefix] + msg[:payload] + "\n"
       $stdout.flush
       if options[:once]
          amqpcat.finish
