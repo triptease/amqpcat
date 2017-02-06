@@ -53,7 +53,7 @@ class Amqpcat
       :host => url.host,
       :port => url.port || (use_ssl ? 5671 : 5672),
       :user => url.user || 'guest',
-      :pass => URI.unescape(url.password) || 'guest',
+      :pass => URI.unescape(url.password || 'guest'),
       :vhost => url.path == "" ? '/' : url.path[1..-1],
       :ssl => use_ssl,
     }
